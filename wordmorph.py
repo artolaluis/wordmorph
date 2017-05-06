@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+from Queue import PriorityQueue
 
 
 class Graph(object):
@@ -72,6 +73,56 @@ class Graph(object):
         print
 
 
+class PathFinder(object):
+
+    def __init__(self, graph):
+        self.graph = graph
+        self.trail = dict()
+        distances = dict()
+
+    def find(self, start, end):
+        self.measure(start, end)
+        distance, path = self.build_path(start, end)
+        if not distance:
+            return None
+        return path
+
+    def measure(self, start, end):
+        to_visit = PriorityQueue()
+        self.trail = dict()
+        self.distances = dict()
+
+        to_visit.put((0, start))
+        self.trail[start] = None
+        self.distances[start] = 0
+
+        while not to_visit.empty():
+            current_distance, current_word = to_visit.get()
+            if current_word == end:
+                break
+            nodes = self.graph.adjacent(current_word)
+            for node in nodes:
+                new_distance = self.distances[current_word] + 1
+                if node not in self.distances or new_distance < self.distances[node]:
+                    self.distances[node] = new_distance
+                    to_visit.put((new_distance, node))
+                    self.trail[node] = current_word
+
+    def build_path(self, start, end):
+        if end not in self.distances:
+            return None, []
+
+        path = [end]
+        current = end
+        while current != start:
+            previous = self.trail[current]
+            path.append(previous)
+            current = previous
+        path.reverse()
+
+        return self.distances[end], path
+
+
 def main():
     parser = argparse.ArgumentParser(description='Shortest steps to morph one word into another one letter at a time.')
     parser.add_argument('file_name', type=str, help='text file with list of words')
@@ -87,6 +138,16 @@ def main():
         graph.print_contents()
         graph.print_adjacent(arguments.start)
         graph.print_adjacent(arguments.end)
+
+    finder = PathFinder(graph)
+    path = finder.find(arguments.start, arguments.end)
+    print 'Morph: {start} to {end}'.format(start=arguments.start, end=arguments.end)
+    if path:
+        steps = len(path) - 1
+        print 'Path : {steps} steps'.format(steps=steps)
+        print '\n'.join(path)
+    else:
+        print 'No solution.'
 
 
 if __name__ == '__main__':
