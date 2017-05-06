@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
+import multiprocessing
 import sys
+import threading
 from Queue import PriorityQueue
 
 
@@ -88,13 +90,35 @@ class Graph(object):
         """Initialize graph from words of the specified length stored in the
         given text file."""
         graph = class_type()
+        lines = []
         with open(file_name, 'r') as input_file:
-            for word in input_file:
-                word = word.strip() if word else word
-                if not word or len(word) != word_length:
-                    continue
-                graph.add(word)
+            lines = input_file.read()
+        lines = lines.split()
+        cpus = multiprocessing.cpu_count()
+        total_lines = len(lines)
+        lines_per_process = total_lines/cpus
+        remaining_lines = total_lines%cpus
+        threads = []
+        for index in xrange(cpus):
+            start = index*lines_per_process
+            end = start+lines_per_process
+            if index == (cpus-1):
+                end += remaining_lines
+            thread = threading.Thread(target=graph.build_from_lines, args=(lines, start, end, word_length))
+            threads.append(thread)
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
         return graph
+
+    def build_from_lines(self, lines, start, end, word_length):
+        for index in xrange(start, end):
+            word = lines[index]
+            word = word.strip() if word else word
+            if not word or len(word) != word_length:
+                continue
+            self.add(word)
 
     @classmethod
     def build_from_words(class_type, words):
