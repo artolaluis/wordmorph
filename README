@@ -1,0 +1,25 @@
+wordmorph
+=========
+
+Finds the shortest number of steps to morph one word into another by changing one letter at a time. The initial, target and intermediate words must be valid from a given dictionary.
+
+Usage:
+
+    wordmorph.py [-h] [--verbose] file_name word_length start end
+
+    Shortest steps to morph one word into another one letter at a time.
+
+    positional arguments:
+      file_name    text file with list of words
+      word_length  number of letters per word
+      start        start word
+      end          end word
+
+    optional arguments:
+      -h, --help   show this help message and exit
+      --verbose    show debug information
+
+Examples:
+
+    ./wordmorph.py words_5_letters.txt 5 smart brain
+
