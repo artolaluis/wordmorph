@@ -20,8 +20,18 @@ class TestGraph(unittest.TestCase):
         pot
         put
         '''.strip().split()
-        graph = wordmorph.Graph.build_from_words(words)
-        self.finder = wordmorph.PathFinder(graph)
+        self.graph = wordmorph.Graph.build_from_words(words)
+        self.finder = wordmorph.PathFinder(self.graph)
+
+    def test_graph(self):
+        nodes = self.graph.adjacent('car')
+        self.assertEquals(sorted(nodes), ['cat', 'par'])
+
+        nodes = self.graph.adjacent('fit')
+        self.assertEquals(sorted(nodes), [])
+
+        nodes = self.graph.adjacent('hat')
+        self.assertEquals(sorted(nodes), ['cat', 'hot', 'pat'])
 
     def test_normal_cases(self):
         distance, path = self.finder.find('car', 'cat')

@@ -34,3 +34,11 @@ Output:
     blain
     brain
 
+Unit tests:
+    ./tests.py
+
+Word data sets:
+1. words_all.txt: All English words taken from OS X /usr/share/dict/words
+2. words_5_letters.txt: Only 5-letter words from the original list.
+3. words_3_letters.txt: Only 3-letter words from the original list.
+
