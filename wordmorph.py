@@ -81,6 +81,8 @@ class PathFinder(object):
         distances = dict()
 
     def find(self, start, end):
+        if not start or not end:
+            return None, None
         if start == end:
             return 0, []
         self.measure(start, end)
