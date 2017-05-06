@@ -81,11 +81,11 @@ class PathFinder(object):
         distances = dict()
 
     def find(self, start, end):
+        if start == end:
+            return 0, []
         self.measure(start, end)
         distance, path = self.build_path(start, end)
-        if not distance:
-            return None
-        return path
+        return distance, path
 
     def measure(self, start, end):
         to_visit = PriorityQueue()
@@ -110,7 +110,7 @@ class PathFinder(object):
 
     def build_path(self, start, end):
         if end not in self.distances:
-            return None, []
+            return None, None
 
         path = [end]
         current = end
@@ -140,11 +140,10 @@ def main():
         graph.print_adjacent(arguments.end)
 
     finder = PathFinder(graph)
-    path = finder.find(arguments.start, arguments.end)
+    distance, path = finder.find(arguments.start, arguments.end)
     print 'Morph: {start} to {end}'.format(start=arguments.start, end=arguments.end)
-    if path:
-        steps = len(path) - 1
-        print 'Path : {steps} steps'.format(steps=steps)
+    if path is not None:
+        print 'Path : {steps} steps'.format(steps=distance)
         print '\n'.join(path)
     else:
         print 'No solution.'
